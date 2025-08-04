@@ -1,4 +1,6 @@
-import { createContext, useState} from "react";
+import { createContext, useState } from "react";
+import { auth, googleProvider } from "../firebase";
+import { signInWithPopup } from "firebase/auth";
 
 export const AuthContext = createContext();
 
@@ -15,8 +17,23 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const googleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const userData = {
+        name: result.user.displayName,
+        email: result.user.email,
+        photo: result.user.photoURL,
+      };
+      login(userData);
+    } catch (error) {
+      console.error(error);
+      alert("Google Sign-In failed");
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, googleSignIn }}>
       {children}
     </AuthContext.Provider>
   );
