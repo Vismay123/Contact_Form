@@ -26,7 +26,7 @@ const ContactList = () => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold">Contact List</h2>
         {selectedContacts.length > 0 && (
@@ -40,31 +40,55 @@ const ContactList = () => {
       </div>
 
       {contacts.length > 0 ? (
-        <ul className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
-          {contacts.map((c, idx) => (
-            <li key={idx} className="border bg-white p-4 rounded shadow-sm relative">
-              <div className="flex items-start justify-between">
-                <input
-                  type="checkbox"
-                  checked={selectedContacts.includes(idx)}
-                  onChange={() => handleCheckboxChange(idx)}
-                  className="mr-2 mt-1 w-4 h-4"
-                />
-                <div className="flex-1">
-                  <p className="font-semibold">{c.name}</p>
-                  <p className="text-gray-600">{c.email}</p>
-                  <p className="text-gray-500">{c.phone}</p>
-                </div>
-                <button
-                  onClick={() => handleDeleteSingle(idx)}
-                  className="text-red-600 hover:text-red-800 font-bold ml-2"
-                >
-                  ✕
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="flex-1 overflow-x-auto">
+          <table className="w-full h-full bg-white rounded-lg shadow-md overflow-hidden">
+            <thead className="bg-blue-600 text-white">
+              <tr>
+                <th className="p-3 text-left">
+                  <input
+                    type="checkbox"
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedContacts(contacts.map((_, idx) => idx))
+                      } else {
+                        setSelectedContacts([])
+                      }
+                    }}
+                    checked={selectedContacts.length === contacts.length}
+                  />
+                </th>
+                <th className="p-3 text-left">Name</th>
+                <th className="p-3 text-left">Email</th>
+                <th className="p-3 text-left">Phone</th>
+                <th className="p-3 text-left">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts.map((c, idx) => (
+                <tr key={idx} className="border-b hover:bg-gray-100">
+                  <td className="p-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedContacts.includes(idx)}
+                      onChange={() => handleCheckboxChange(idx)}
+                    />
+                  </td>
+                  <td className="p-3">{c.name}</td>
+                  <td className="p-3">{c.email}</td>
+                  <td className="p-3">{c.phone}</td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => handleDeleteSingle(idx)}
+                      className="text-red-600 hover:text-red-800 font-bold"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="text-gray-500">No contacts found.</p>
       )}

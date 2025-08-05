@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom'
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { login, googleSignIn } = useContext(AuthContext) // Added googleSignIn
+  const { login, googleSignIn } = useContext(AuthContext) 
   const navigate = useNavigate()
 
   const handleSubmit = (e) => {
@@ -21,7 +21,7 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await googleSignIn() // From AuthContext
+      await googleSignIn() 
       navigate('/dashboard')
     } catch (error) {
       console.error(error)
@@ -34,7 +34,6 @@ const Login = () => {
       <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 shadow-xl rounded-md space-y-6">
         <h2 className="text-2xl font-bold text-center">Login to Your Account</h2>
         
-        {/* Email/Password Fields */}
         <input 
           type="email" 
           placeholder="Email" 
@@ -59,7 +58,6 @@ const Login = () => {
           Login
         </button>
 
-        {/* Google Sign-In Button */}
         <button 
           type="button" 
           onClick={handleGoogleLogin} 

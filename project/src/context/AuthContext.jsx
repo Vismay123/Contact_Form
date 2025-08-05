@@ -18,19 +18,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const googleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const userData = {
-        name: result.user.displayName,
-        email: result.user.email,
-        photo: result.user.photoURL,
-      };
-      login(userData);
-    } catch (error) {
-      console.error(error);
-      alert("Google Sign-In failed");
-    }
-  };
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const userData = {
+      name: result.user.displayName,
+      email: result.user.email
+    };
+    login(userData); 
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 
   return (
     <AuthContext.Provider value={{ user, login, logout, googleSignIn }}>
