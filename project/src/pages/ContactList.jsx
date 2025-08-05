@@ -3,6 +3,8 @@ import { useState } from 'react'
 const ContactList = () => {
   const [contacts, setContacts] = useState(JSON.parse(localStorage.getItem("contacts")) || [])
   const [selectedContacts, setSelectedContacts] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const contactsPerPage = 5
 
   const handleCheckboxChange = (index) => {
     if (selectedContacts.includes(index)) {
@@ -24,6 +26,12 @@ const ContactList = () => {
     setContacts(updatedContacts)
     localStorage.setItem("contacts", JSON.stringify(updatedContacts))
   }
+
+  // this is logic for paginaton 
+  
+  const totalPages = Math.ceil(contacts.length / contactsPerPage)
+  const startIndex = (currentPage - 1) * contactsPerPage
+  const currentContacts = contacts.slice(startIndex, startIndex + contactsPerPage)
 
   return (
     <div className="flex flex-col h-full">
@@ -49,12 +57,13 @@ const ContactList = () => {
                     type="checkbox"
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setSelectedContacts(contacts.map((_, idx) => idx))
+                        setSelectedContacts(currentContacts.map((_, idx) => startIndex + idx))
                       } else {
-                        setSelectedContacts([])
+                        const filtered = selectedContacts.filter(i => !currentContacts.includes(i))
+                        setSelectedContacts(filtered)
                       }
                     }}
-                    checked={selectedContacts.length === contacts.length}
+                    checked={selectedContacts.length === currentContacts.length && currentContacts.length > 0}
                   />
                 </th>
                 <th className="p-3 text-left">Name</th>
@@ -64,13 +73,13 @@ const ContactList = () => {
               </tr>
             </thead>
             <tbody>
-              {contacts.map((c, idx) => (
-                <tr key={idx} className="border-b hover:bg-gray-100">
+              {currentContacts.map((c, idx) => (
+                <tr key={startIndex + idx} className="border-b hover:bg-gray-100">
                   <td className="p-3">
                     <input
                       type="checkbox"
-                      checked={selectedContacts.includes(idx)}
-                      onChange={() => handleCheckboxChange(idx)}
+                      checked={selectedContacts.includes(startIndex + idx)}
+                      onChange={() => handleCheckboxChange(startIndex + idx)}
                     />
                   </td>
                   <td className="p-3">{c.name}</td>
@@ -78,7 +87,7 @@ const ContactList = () => {
                   <td className="p-3">{c.phone}</td>
                   <td className="p-3">
                     <button
-                      onClick={() => handleDeleteSingle(idx)}
+                      onClick={() => handleDeleteSingle(startIndex + idx)}
                       className="text-red-600 hover:text-red-800 font-bold"
                     >
                       Delete
@@ -88,6 +97,32 @@ const ContactList = () => {
               ))}
             </tbody>
           </table>
+
+          <div className="flex justify-center items-center mt-4 space-x-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-gray-300 rounded hover:bg-gray-400 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       ) : (
         <p className="text-gray-500">No contacts found.</p>
