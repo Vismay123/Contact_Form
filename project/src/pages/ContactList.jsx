@@ -4,6 +4,7 @@ const ContactList = () => {
   const [contacts, setContacts] = useState(JSON.parse(localStorage.getItem("contacts")) || [])
   const [selectedContacts, setSelectedContacts] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('') // ✅ Search state
   const contactsPerPage = 5
 
   const handleCheckboxChange = (index) => {
@@ -27,16 +28,37 @@ const ContactList = () => {
     localStorage.setItem("contacts", JSON.stringify(updatedContacts))
   }
 
-  // this is logic for paginaton 
-  
-  const totalPages = Math.ceil(contacts.length / contactsPerPage)
+  // ✅ Filter contacts based on search term
+  const filteredContacts = contacts.filter(c =>
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.phone && c.phone.includes(searchTerm))
+  )
+
+  // ✅ Pagination logic (on filtered list)
+  const totalPages = Math.ceil(filteredContacts.length / contactsPerPage)
   const startIndex = (currentPage - 1) * contactsPerPage
-  const currentContacts = contacts.slice(startIndex, startIndex + contactsPerPage)
+  const currentContacts = filteredContacts.slice(startIndex, startIndex + contactsPerPage)
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value)
+    setCurrentPage(1) // Reset to first page when searching
+  }
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
         <h2 className="text-2xl font-semibold">Contact List</h2>
+
+        {/* ✅ Search Input */}
+        <input
+          type="text"
+          placeholder="Search by name, email, or phone"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="border border-gray-300 p-2 rounded w-full md:w-1/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+
         {selectedContacts.length > 0 && (
           <button
             onClick={handleDeleteSelected}
@@ -47,7 +69,7 @@ const ContactList = () => {
         )}
       </div>
 
-      {contacts.length > 0 ? (
+      {filteredContacts.length > 0 ? (
         <div className="flex-1 overflow-x-auto">
           <table className="w-full h-full bg-white rounded-lg shadow-md overflow-hidden">
             <thead className="bg-blue-600 text-white">
@@ -98,6 +120,7 @@ const ContactList = () => {
             </tbody>
           </table>
 
+          {/* ✅ Pagination */}
           <div className="flex justify-center items-center mt-4 space-x-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
