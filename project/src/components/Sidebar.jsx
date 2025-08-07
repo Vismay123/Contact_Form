@@ -15,9 +15,9 @@ const Sidebar = () => {
       <Link to="/dashboard/contacts" className="block px-4 py-2 rounded hover:bg-gray-700">
         📋 Contact List
       </Link>
-      <Link to="/dashboard/add-contact" className="block px-4 py-2 rounded hover:bg-gray-700">
+      {/* <Link to="/dashboard/add-contact" className="block px-4 py-2 rounded hover:bg-gray-700">
         ➕ Add Contact
-      </Link>
+      </Link> */}
 
       <button
         onClick={logout}
